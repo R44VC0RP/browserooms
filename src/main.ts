@@ -293,8 +293,12 @@ async function boot() {
     settingsButton.setAttribute("aria-expanded", String(open));
     if (open) element("close-settings").focus();
   }
+  function closeSettingsAndResume() {
+    openSettings(false);
+    enterWorld();
+  }
   settingsButton.addEventListener("click", () => openSettings(settings.hidden));
-  element("close-settings").addEventListener("click", () => { openSettings(false); settingsButton.focus(); });
+  element("close-settings").addEventListener("click", closeSettingsAndResume);
   element<HTMLInputElement>("exposure").addEventListener("input", (event) => {
     const ev = Number((event.target as HTMLInputElement).value);
     renderer.toneMappingExposure = referenceExposure * Math.pow(2, ev);
@@ -358,7 +362,7 @@ async function boot() {
   });
   window.addEventListener("keydown", (event) => {
     if (!entered && !event.repeat) music.resume();
-    if (event.code === "Escape" && !settings.hidden) { openSettings(false); return; }
+    if (event.code === "Escape" && !settings.hidden) { closeSettingsAndResume(); return; }
     if (!active) return;
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     if (event.code === "KeyM") { event.preventDefault(); if (event.repeat) return; ambience.toggle(); if (ambience.enabled) music.resume(); void footsteps.prepare(); void zoom.prepare(); void distant.prepare(); void alarm.prepare(); void flicker?.prepare(); return; }
